@@ -468,11 +468,12 @@
     const col = shotZone % 3;
     const row = (shotZone / 3) | 0;
 
-    // chance the ball flies off target (worse with high power & corners)
+    // chance the ball flies off target — depends only on AIM, not power.
+    // Going for the corners (sides/top) is riskier, but blasting the ball at
+    // full power never makes you miss: a hard, well-aimed shot is rewarded.
     let missCh = 0.02;
     if (col !== 1) missCh += 0.05;
     if (row === 0) missCh += 0.06;
-    if (p > 0.8) missCh += (p - 0.8) * 0.5;
     if (Math.random() < missCh) return 'miss';
 
     const dist = chebyshev(shotZone, keeperZone);

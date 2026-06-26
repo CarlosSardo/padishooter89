@@ -68,8 +68,8 @@ being the **SHOOTER** and the **GOALKEEPER**.
 ### 🥅 When you are the SHOOTER
 1. **Tap a target** — pick one of the 9 glowing targets in the goal.
 2. **Set the power** — a bar swings from 1% → 100%. **Tap again** to lock it and SHOOT!
-   - More power is harder to save… but aim for the top corners at full power and you
-     might blast it wide! ⚡ Risk vs reward.
+   - More power is harder for the keeper to save, so don't be shy — wind it up! ⚡
+     Just watch your aim: the **top corners** are the riskiest spots to go for.
 
 ### 🧤 When you are the GOALKEEPER
 - **Tap where you want to dive** before the ball is struck.
