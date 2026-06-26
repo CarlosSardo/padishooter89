@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0d1b2a" />
+    <title>PaDi Shooter 89</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>⚽</text></svg>"
+    />
+  </head>
+  <body>
+    <div id="stage">
+      <!-- The whole game is drawn on this canvas -->
+      <canvas id="game" width="800" height="600"></canvas>
+
+      <!-- CRT scanline + vignette effect -->
+      <div id="crt"></div>
+
+      <!-- HTML menu overlays sit on top of the canvas -->
+      <div id="overlay">
+        <!-- TITLE -->
+        <section id="screen-title" class="screen">
+          <div class="ball-emoji">⚽</div>
+          <h1 class="title">PaDi<br />SHOOTER 89</h1>
+          <p class="subtitle">PA = PAPA &nbsp;•&nbsp; DI = DIOGO</p>
+          <p class="tag">
+            ~ THE PENALTY SHOOT-OUT GAME ~<br />
+            a first game by CARLOS &amp; DIOGO SARDO
+          </p>
+          <button id="btn-1p" class="btn primary">1 Player</button>
+          <button id="btn-2p" class="btn">2 Players</button>
+          <button id="btn-leaderboard" class="btn">Leaderboard</button>
+          <button id="btn-help" class="btn small">How to Play</button>
+          <p class="hint">Tip: turn the sound ON for the full stadium feel!</p>
+        </section>
+
+        <!-- SETUP -->
+        <section id="screen-setup" class="screen hidden">
+          <h2 id="setup-title" class="heading">1 PLAYER vs CPU</h2>
+
+          <div class="field">
+            <label for="p1-name">Player 1 name (the keeper &amp; shooter)</label>
+            <input id="p1-name" type="text" maxlength="10" value="PAPA" />
+          </div>
+
+          <div class="field" id="p2-row" style="display: none">
+            <label for="p2-name">Player 2 name</label>
+            <input id="p2-name" type="text" maxlength="10" value="DIOGO" />
+          </div>
+
+          <div class="field" id="diff-row">
+            <label>CPU difficulty</label>
+            <div class="diff-buttons">
+              <button class="btn" data-diff="easy">Easy</button>
+              <button class="btn sel" data-diff="normal">Normal</button>
+              <button class="btn" data-diff="hard">Hard</button>
+            </div>
+          </div>
+
+          <button id="btn-setup-start" class="btn primary">Kick Off!</button>
+          <button id="btn-setup-back" class="btn small">Back</button>
+        </section>
+
+        <!-- HELP -->
+        <section id="screen-help" class="screen hidden">
+          <h2 class="heading">HOW TO PLAY</h2>
+          <div class="help-text">
+            <p>
+              It's a penalty shoot-out! <b>5 penalties each</b>. Players swap
+              between <b>shooter</b> and <b>keeper</b> every turn.
+            </p>
+            <ul>
+              <li><b>KEEPER:</b> tap a zone in the goal to dive there (the shooter should look away!).</li>
+              <li><b>SHOOTER:</b> tap a target zone, then tap again to lock the <b>POWER</b> bar and shoot.</li>
+            </ul>
+            <p>
+              <b>Power 1-100%:</b> more power is harder to save, but aim for the
+              corners with full power and you might miss!
+            </p>
+            <p>
+              In <b>1 player</b> mode you play the CPU. Most goals after 5 rounds
+              wins. A tie goes to <b>sudden death</b>!
+            </p>
+            <p>
+              Listen for the <b>referee whistle</b>, the <b>crowd</b>, and the
+              <b>GOAL</b> music. Tap the <b>♪</b> button (top-right) to mute.
+            </p>
+          </div>
+          <button id="btn-help-back" class="btn primary small">Back</button>
+        </section>
+
+        <!-- LEADERBOARD -->
+        <section id="screen-leaderboard" class="screen hidden">
+          <h2 class="heading">LEADERBOARD</h2>
+          <div id="lb-list"></div>
+          <button id="btn-lb-back" class="btn primary small">Back</button>
+          <button id="btn-lb-clear" class="btn danger small">Clear Scores</button>
+        </section>
+
+        <!-- MATCH OVER -->
+        <section id="screen-matchover" class="screen hidden">
+          <h2 class="heading">FULL TIME!</h2>
+          <p id="mo-result" class="mo-result">PLAYER WINS!</p>
+          <p id="mo-score" class="mo-score">0 - 0</p>
+          <p class="hint">Your score was saved to the leaderboard.</p>
+          <button id="btn-mo-again" class="btn primary">Play Again</button>
+          <button id="btn-mo-menu" class="btn small">Main Menu</button>
+        </section>
+      </div>
+    </div>
+
+    <!-- load order matters: helpers first, game last -->
+    <script src="js/audio.js"></script>
+    <script src="js/leaderboard.js"></script>
+    <script src="js/crowd.js"></script>
+    <script src="js/game.js"></script>
+  </body>
+</html>

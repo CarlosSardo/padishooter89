@@ -1,0 +1,325 @@
+/* =====================================================================
+   PaDi Shooter 89 - Retro Styling
+   ===================================================================== */
+:root {
+  --ink: #0d1b2a;
+  --paper: #102a43;
+  --accent: #ffd23b;
+  --accent2: #ef233c;
+  --good: #37b24d;
+  --blue: #3a86ff;
+  --pixel: 'Press Start 2P', 'Courier New', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  background: #05080f;
+  color: #fff;
+  font-family: var(--pixel);
+  -webkit-font-smoothing: none;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background:
+    radial-gradient(circle at 50% 0%, #14304a 0%, #05080f 70%);
+}
+
+/* ---- the game stage --------------------------------------------------- */
+#stage {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  aspect-ratio: 4 / 3;
+  border: 4px solid #000;
+  box-shadow: 0 0 0 4px var(--accent), 0 12px 40px rgba(0, 0, 0, 0.7);
+  background: #1b6ca8;
+  overflow: hidden;
+}
+
+#game {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  touch-action: none;
+}
+
+/* CRT scanlines + vignette overlay */
+#crt {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.12) 0px,
+    rgba(0, 0, 0, 0.12) 1px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0) 3px
+  );
+}
+#crt::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0) 60%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
+}
+
+/* ---- HTML menu overlays ---------------------------------------------- */
+#overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(5, 12, 22, 0.72);
+}
+#overlay.hidden {
+  display: none;
+}
+
+.screen {
+  width: 100%;
+  max-width: 560px;
+  max-height: 100%;
+  overflow-y: auto;
+  text-align: center;
+  background: linear-gradient(180deg, #123 0%, #0a1622 100%);
+  border: 3px solid #000;
+  box-shadow: inset 0 0 0 2px var(--accent), 0 8px 0 rgba(0, 0, 0, 0.5);
+  padding: 22px 18px;
+}
+.screen.hidden {
+  display: none;
+}
+
+.title {
+  font-size: clamp(18px, 5vw, 34px);
+  line-height: 1.4;
+  color: var(--accent);
+  text-shadow: 3px 3px 0 var(--accent2), 6px 6px 0 #000;
+  margin-bottom: 6px;
+}
+.subtitle {
+  font-size: 9px;
+  color: #9fd3ff;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.tag {
+  font-size: 8px;
+  color: #ffd23b;
+  margin: 10px 0 16px;
+  line-height: 1.8;
+}
+.ball-emoji {
+  font-size: 26px;
+  margin: 4px;
+  display: inline-block;
+  animation: spin 4s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+h2.heading {
+  font-size: 14px;
+  color: var(--accent);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+/* ---- retro buttons ---------------------------------------------------- */
+.btn {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  margin: 8px auto;
+  padding: 14px 12px;
+  font-family: var(--pixel);
+  font-size: 12px;
+  color: #fff;
+  background: var(--blue);
+  border: 3px solid #000;
+  box-shadow: 0 4px 0 #00264d, inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: transform 0.05s, box-shadow 0.05s;
+}
+.btn:hover {
+  filter: brightness(1.1);
+}
+.btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 #00264d, inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+.btn.primary {
+  background: var(--good);
+  box-shadow: 0 4px 0 #1c5f2a, inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+.btn.danger {
+  background: var(--accent2);
+  box-shadow: 0 4px 0 #8a0f1d, inset 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+.btn.small {
+  font-size: 9px;
+  padding: 10px;
+  max-width: 200px;
+}
+
+/* ---- setup form ------------------------------------------------------- */
+.field {
+  margin: 12px auto;
+  max-width: 320px;
+  text-align: left;
+}
+.field label {
+  display: block;
+  font-size: 9px;
+  color: #9fd3ff;
+  margin-bottom: 6px;
+}
+.field input {
+  width: 100%;
+  padding: 12px;
+  font-family: var(--pixel);
+  font-size: 12px;
+  color: #fff;
+  background: #0a1622;
+  border: 3px solid #000;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.15);
+  text-transform: uppercase;
+}
+.field input:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.diff-buttons {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 6px;
+}
+.diff-buttons .btn {
+  margin: 0;
+  font-size: 9px;
+  padding: 10px 6px;
+  background: #24405e;
+  box-shadow: 0 3px 0 #0a1622;
+}
+.diff-buttons .btn.sel {
+  background: var(--accent);
+  color: #000;
+}
+
+/* ---- help text -------------------------------------------------------- */
+.help-text {
+  text-align: left;
+  font-size: 9px;
+  line-height: 1.9;
+  color: #d6e6ff;
+  margin-bottom: 16px;
+}
+.help-text b {
+  color: var(--accent);
+}
+.help-text ul {
+  margin: 8px 0 8px 16px;
+}
+
+/* ---- leaderboard ------------------------------------------------------ */
+.lb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9px;
+  margin-bottom: 14px;
+}
+.lb-table th,
+.lb-table td {
+  border: 2px solid #000;
+  padding: 8px 4px;
+  text-align: center;
+}
+.lb-table th {
+  background: var(--blue);
+  color: #fff;
+}
+.lb-table tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.05);
+}
+.lb-table tr:nth-child(2) td {
+  color: var(--accent);
+}
+.lb-empty {
+  font-size: 10px;
+  color: #9fd3ff;
+  margin: 24px 0;
+}
+
+/* ---- match over ------------------------------------------------------- */
+.mo-result {
+  font-size: 22px;
+  color: var(--accent);
+  text-shadow: 2px 2px 0 var(--accent2), 4px 4px 0 #000;
+  margin: 10px 0;
+}
+.mo-score {
+  font-size: 13px;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.hint {
+  font-size: 8px;
+  color: #6b8cae;
+  margin-top: 14px;
+  line-height: 1.8;
+}
+
+/* ---- responsive ------------------------------------------------------- */
+@media (max-width: 520px) {
+  .title {
+    text-shadow: 2px 2px 0 var(--accent2), 4px 4px 0 #000;
+  }
+  .screen {
+    padding: 16px 12px;
+  }
+  .btn {
+    font-size: 11px;
+    padding: 13px 8px;
+  }
+}
+
+/* On short landscape phones, let the stage use full height */
+@media (max-height: 520px) and (orientation: landscape) {
+  #stage {
+    height: 96vh;
+    width: auto;
+    aspect-ratio: 4 / 3;
+  }
+}
