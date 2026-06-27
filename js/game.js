@@ -1149,10 +1149,12 @@
     ctx.font = '13px "Press Start 2P", monospace';
     ctx.textAlign = 'center';
     const w = ctx.measureText(G.banner.text).width + 28;
-    ctx.fillStyle = 'rgba(0,0,0,0.6)';
-    ctx.fillRect(VW / 2 - w / 2, 200, w, 30);
+    // Sit the "who shoots / who defends" message up in the crowd (stands band
+    // is y 0-140), like a stadium announcement above the pitch.
+    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+    ctx.fillRect(VW / 2 - w / 2, 56, w, 30);
     ctx.fillStyle = '#fff';
-    ctx.fillText(G.banner.text, VW / 2, 220);
+    ctx.fillText(G.banner.text, VW / 2, 76);
   }
 
   function drawResult(ctx) {
