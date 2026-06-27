@@ -102,6 +102,10 @@
     particles: [],
     shake: 0,
 
+    // referee on the left touchline - bobs idly, then points + blows the
+    // whistle when a shot is dictated. t counts up through the signal anim.
+    ref: { x: 78, y: 438, clock: 0, t: 999, dur: 1.3 },
+
     banner: null,
     resultText: '',
     resultColor: '#fff',
@@ -378,6 +382,7 @@
     const roundLabel = m.suddenDeath ? 'SUDDEN DEATH' : 'ROUND ' + m.round + '/' + m.maxRounds;
     setBanner(roundLabel + '  -  ' + sh.name + ' (' + kitOf(sh).short + ') SHOOTS', 1.4);
     setPhase('getready');
+    refSignal(); // ref points to the spot + whistles to dictate the shot
     delay(1300, () => beginKeeperPhase());
   }
 
@@ -429,9 +434,15 @@
     }, ms);
   }
 
+  // The referee dictates the shot: he raises an arm to the spot and blows
+  // his whistle. Animation (G.ref.t) and the whistle sound fire together.
+  function refSignal() {
+    G.ref.t = 0;
+    audio.whistle(2);
+  }
+
   function beginKeeperPhase() {
     setPhase('keeperset');
-    audio.whistle(2); // referee signals the penalty
     const k = keeper();
     if (k.isCPU) {
       setBanner('CPU IS GETTING READY...', 0);
@@ -631,6 +642,10 @@
   function update(dt) {
     if (G.crowd) G.crowd.update(dt);
 
+    // referee idle bob + (when signalling) the point/whistle timeline
+    G.ref.clock += dt;
+    if (G.ref.t < G.ref.dur) G.ref.t += dt;
+
     // power meter oscillation
     if (G.phase === 'power' && !G.powerLocked) {
       G.powerPhase += dt * 1.6; // ~ full sweep speed
@@ -762,6 +777,7 @@
     drawStands(ctx);
     G.crowd.draw(ctx);
     drawField(ctx);
+    drawReferee(ctx);
     drawGoal(ctx);
     drawKeeper(ctx);
     drawShooter(ctx);
@@ -850,6 +866,127 @@
     ctx.beginPath();
     ctx.arc(SPOT.x, 470, 4, 0, Math.PI * 2);
     ctx.fill();
+  }
+
+  // The match referee, standing beside the left touchline. He bobs gently
+  // while idle; when a penalty is dictated he swings an arm out toward the
+  // spot and his whistle lets out a little puff (in sync with audio.whistle).
+  function drawReferee(ctx) {
+    const r = G.ref;
+    const signalling = r.t < r.dur;
+    let point = 0; // 0 arm down .. 1 arm out toward the spot
+    let blow = 0; // whistle puff intensity
+    if (signalling) {
+      const t = r.t;
+      point = t < 0.18 ? t / 0.18 : t > 1.0 ? Math.max(0, 1 - (t - 1.0) / 0.3) : 1;
+      blow = t < 0.55 ? (0.55 + 0.45 * Math.sin(t * 42)) * (1 - t / 0.55) : 0;
+    }
+    const bob = Math.sin(r.clock * 2.2) * 1.1;
+
+    ctx.save();
+    ctx.translate(r.x, r.y + bob);
+
+    // ground shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath();
+    ctx.ellipse(2, 19, 13, 4.5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // legs (black shorts + socks)
+    ctx.strokeStyle = '#101216';
+    ctx.lineWidth = 6;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-4, -2);
+    ctx.lineTo(-7, 18);
+    ctx.moveTo(4, -2);
+    ctx.lineTo(8, 18);
+    ctx.stroke();
+    // white sock tops
+    ctx.strokeStyle = '#f1f1f1';
+    ctx.beginPath();
+    ctx.moveTo(-6, 11);
+    ctx.lineTo(-7, 15);
+    ctx.moveTo(7, 11);
+    ctx.lineTo(8, 15);
+    ctx.stroke();
+
+    // back arm bent up, holding the whistle to the mouth
+    ctx.strokeStyle = '#15171c';
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(-5, -28);
+    ctx.lineTo(2, -40);
+    ctx.stroke();
+
+    // body (classic all-black referee shirt)
+    ctx.fillStyle = '#17181d';
+    ctx.fillRect(-9, -34, 18, 32);
+    // yellow trim down the sides
+    ctx.fillStyle = '#f5c400';
+    ctx.fillRect(-9, -34, 2, 32);
+    ctx.fillRect(7, -34, 2, 32);
+    // white collar
+    ctx.fillStyle = '#f1f1f1';
+    ctx.fillRect(-5, -34, 10, 3);
+    // outline
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(-9, -34, 18, 32);
+
+    // front arm: hangs idle, swings out to point at the spot when signalling
+    const hx = lerp(12, 34, point);
+    const hy = lerp(4, -14, point);
+    ctx.strokeStyle = '#17181d';
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(6, -30);
+    ctx.lineTo(hx, hy);
+    ctx.stroke();
+    // pointing hand
+    ctx.fillStyle = '#ffd9b3';
+    ctx.beginPath();
+    ctx.arc(hx, hy, 3.2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // head
+    ctx.fillStyle = '#ffd9b3';
+    ctx.beginPath();
+    ctx.arc(0, -42, 7, 0, Math.PI * 2);
+    ctx.fill();
+    // hair + little cap brim toward the pitch
+    ctx.fillStyle = '#241608';
+    ctx.fillRect(-7, -50, 14, 5);
+    ctx.fillRect(4, -47, 6, 3);
+
+    // whistle at the mouth + lanyard down to the chest
+    ctx.strokeStyle = '#9aa0a6';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(6, -40);
+    ctx.lineTo(0, -30);
+    ctx.stroke();
+    ctx.fillStyle = '#e8e8e8';
+    ctx.fillRect(6, -43, 6, 4);
+    ctx.fillStyle = '#333';
+    ctx.fillRect(10, -42, 2, 2);
+
+    // whistle puff while blowing
+    if (blow > 0.02) {
+      ctx.globalAlpha = Math.min(1, blow);
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      for (let i = 0; i < 3; i++) {
+        const rr = 4 + i * 3 + blow * 3;
+        ctx.beginPath();
+        ctx.arc(13, -41, rr, -Math.PI * 0.35, Math.PI * 0.35);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    ctx.restore();
   }
 
   function drawGoal(ctx) {
