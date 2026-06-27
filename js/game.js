@@ -15,7 +15,7 @@
   const VH = 600;
 
   // ----- the goal mouth and its 9 aiming zones ---------------------------
-  const GOAL = { x: 215, y: 150, w: 370, h: 120 };
+  const GOAL = { x: 250, y: 170, w: 300, h: 82 };
   const ZONE_COLS = 3;
   const ZONE_ROWS = 3;
 
@@ -40,8 +40,8 @@
 
   // penalty spot (where the ball starts on screen)
   const SPOT = { x: VW / 2, y: 478 };
-  // keeper home position
-  const KEEPER_HOME = { x: VW / 2, y: GOAL.y + GOAL.h - 8 };
+  // keeper home position (feet resting on the goal line)
+  const KEEPER_HOME = { x: VW / 2, y: GOAL.y + GOAL.h - 14 };
 
   // power meter bar
   const POWER_BAR = { x: 170, y: 556, w: 460, h: 26 };
@@ -827,7 +827,10 @@
 
   function drawField(ctx) {
     const top = 154;
-    // perspective stripes
+    const goalCenter = GOAL.x + GOAL.w / 2;
+    const goalLineY = GOAL.y + GOAL.h; // the byline, at the foot of the posts
+
+    // perspective grass stripes
     let stripe = 0;
     for (let y = top; y < VH; y += 1) {
       const t = (y - top) / (VH - top);
@@ -835,37 +838,46 @@
       ctx.fillStyle = stripe % 2 === 0 ? COL.grass1 : COL.grass2;
       ctx.fillRect(0, y, VW, 1);
     }
-    // penalty box + arc + spot
+
     ctx.strokeStyle = COL.line;
     ctx.lineWidth = 3;
-    // goal line
+    ctx.lineJoin = 'round';
+
+    // A pitch marking that recedes toward the goal: it is NARROW where it
+    // meets the goal line (far away) and fans WIDE toward the camera.
+    function box(topHalf, botHalf, botY) {
+      ctx.beginPath();
+      ctx.moveTo(goalCenter - topHalf, goalLineY);
+      ctx.lineTo(goalCenter - botHalf, botY);
+      ctx.lineTo(goalCenter + botHalf, botY);
+      ctx.lineTo(goalCenter + topHalf, goalLineY);
+      ctx.stroke();
+    }
+
+    // goal line (byline) across the whole pitch, at the foot of the posts
     ctx.beginPath();
-    ctx.moveTo(0, top + 2);
-    ctx.lineTo(VW, top + 2);
+    ctx.moveTo(0, goalLineY);
+    ctx.lineTo(VW, goalLineY);
     ctx.stroke();
-    // box (trapezoid for perspective)
-    ctx.beginPath();
-    ctx.moveTo(150, top + 2);
-    ctx.lineTo(110, 360);
-    ctx.lineTo(VW - 110, 360);
-    ctx.lineTo(VW - 150, top + 2);
-    ctx.stroke();
-    // six yard box
-    ctx.beginPath();
-    ctx.moveTo(280, top + 2);
-    ctx.lineTo(265, 235);
-    ctx.lineTo(VW - 265, 235);
-    ctx.lineTo(VW - 280, top + 2);
-    ctx.stroke();
-    // penalty arc
-    ctx.beginPath();
-    ctx.arc(SPOT.x, 392, 70, Math.PI * 1.15, Math.PI * 1.85);
-    ctx.stroke();
+
+    // penalty area (big) then six-yard box (small), both rising from the line
+    const penNearY = 524; // near (camera-side) edge of the penalty area
+    box(200, 330, penNearY); // penalty area
+    box(168, 214, 342); // six-yard box
+
     // penalty spot
     ctx.fillStyle = COL.line;
     ctx.beginPath();
-    ctx.arc(SPOT.x, 470, 4, 0, Math.PI * 2);
+    ctx.arc(SPOT.x, SPOT.y, 4, 0, Math.PI * 2);
     ctx.fill();
+
+    // penalty arc: the "D" — only the part OUTSIDE the box shows, so its ends
+    // sit exactly on the penalty-area near edge and it bulges to the camera.
+    const arcR = 74;
+    const a = Math.asin(Math.min(1, (penNearY - SPOT.y) / arcR));
+    ctx.beginPath();
+    ctx.arc(SPOT.x, SPOT.y, arcR, a, Math.PI - a);
+    ctx.stroke();
   }
 
   // The match referee, standing beside the left touchline. He bobs gently

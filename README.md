@@ -35,6 +35,24 @@ computers**. Just open the link and shoot! 🥅
 
 ---
 
+## 📸 Screenshots
+
+<div align="center">
+
+<img src="assets/screenshot-game.png" alt="Gameplay with aligned goal and box lines" width="640" />
+
+<br />
+
+<img src="assets/screenshot-setup.png" alt="Setup screen with editable PLAYER 1 and PLAYER 2 name fields" width="640" />
+
+<br />
+
+<img src="assets/screenshot-title.png" alt="PaDi Shooter 89 title screen" width="640" />
+
+</div>
+
+---
+
 ## 🌟 About
 
 This is a tiny labour of love: a dad and his son making their **first game together**.
@@ -50,11 +68,14 @@ no build step. Even the music and sound effects are generated in code! 🎶
 |---|---|
 | 🕹️ **Retro 8-bit look** | Pixel font, CRT scanlines, chunky pixel players |
 | 👥 **1 or 2 players** | Beat a friend, or take on the **CPU** (Easy / Normal / Hard) |
+| ✍️ **Editable player names** | Defaults are **PLAYER 1** and **PLAYER 2**, and both can be renamed before kickoff |
 | 🌍 **Pick any team** | Play as any **club or country** — Champions League, World Cup (WK), Euros (EK), La Liga, Primeira Liga, Premier League, Eredivisie, Serie A, Bundesliga & Ligue 1. Your team's **kit colours** appear on the pitch! |
 | 💪 **Power control** | Pick your shot power from **1% to 100%** |
 | 🎯 **9 aim zones** | Top / middle / bottom × left / centre / right |
 | 🧤 **Be the keeper** | Pick where to dive and make the save |
-| 🗣️ **Living crowd** | Fans jump, cheer, boo and **shout** — with confetti on a goal! |
+| 🧑‍⚖️ **Animated referee** | Ref stands by the left touchline, dictates each shot, points at the spot and whistles |
+| 🗣️ **Living crowd** | Fans always support the shooter with cheers/encouragement and centre-screen shout callouts + confetti on goals |
+| 🥅 **True-to-life pitch** | The goal sits on the grass with the goal line, six-yard box, penalty box and penalty arc all drawn in matching perspective |
 | 🎺 **Retro audio** | Whistle, kick, goal anthem, save & miss sounds + chiptune music |
 | 🏆 **Local leaderboard** | High scores saved on your device |
 | 📱 **Mobile friendly** | Designed for touch and small screens |
