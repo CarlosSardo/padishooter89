@@ -81,21 +81,45 @@
         }
       }
 
+      const reaction = type === 'goal' || type === 'save' || type === 'miss';
       const count = type === 'goal' ? 7 : 5;
-      const cx = this.shoutCenter.x;
-      const cy = this.shoutCenter.y;
-      for (let i = 0; i < count; i++) {
-        const txt = pool[(Math.random() * pool.length) | 0];
-        this.shouts.push({
-          text: txt,
-          // cluster the support around the middle of the screen
-          x: cx + (Math.random() - 0.5) * 320,
-          y: cy + (Math.random() - 0.5) * 140,
-          vy: -22 - Math.random() * 16,
-          life: 0,
-          max: 1.1 + Math.random() * 0.5,
-          color: type === 'goal' ? '#fff45b' : '#7cf59a', // gold goal / green cheer
-        });
+
+      if (reaction) {
+        // Support shouts erupt as a tight column right in the MIDDLE of the
+        // screen so the encouragement is impossible to miss.
+        const cx = this.shoutCenter.x;
+        const cy = this.shoutCenter.y;
+        const lineH = 26;
+        for (let i = 0; i < count; i++) {
+          const txt = pool[(Math.random() * pool.length) | 0];
+          const row = i - (count - 1) / 2; // centre the stack vertically
+          this.shouts.push({
+            text: txt,
+            x: cx + (Math.random() - 0.5) * 60, // only a tiny sideways wiggle
+            y: cy + row * lineH,
+            vy: -12 - Math.random() * 8, // drift up gently, stay near centre
+            life: 0,
+            max: 1.3 + Math.random() * 0.5,
+            color: type === 'goal' ? '#fff45b' : '#7cf59a', // gold goal / green cheer
+            big: true,
+          });
+        }
+      } else {
+        // Ambient chants stay up in the stands (not over the pitch).
+        const a = this.area;
+        for (let i = 0; i < count; i++) {
+          const txt = pool[(Math.random() * pool.length) | 0];
+          this.shouts.push({
+            text: txt,
+            x: a.x + 20 + Math.random() * (a.w - 40),
+            y: a.y + 10 + Math.random() * (a.h - 20),
+            vy: -22 - Math.random() * 16,
+            life: 0,
+            max: 1.1 + Math.random() * 0.5,
+            color: '#cfe8ff',
+            big: false,
+          });
+        }
       }
 
       if (type === 'goal') this._spawnConfetti();
@@ -177,9 +201,10 @@
       for (const s of this.shouts) {
         const a = 1 - s.life / s.max;
         ctx.globalAlpha = Math.max(0, a);
-        ctx.font = '10px "Press Start 2P", monospace';
+        ctx.font = (s.big ? 13 : 9) + 'px "Press Start 2P", monospace';
+        const o = s.big ? 2 : 1;
         ctx.fillStyle = '#000';
-        ctx.fillText(s.text, s.x + 1, s.y + 1);
+        ctx.fillText(s.text, s.x + o, s.y + o);
         ctx.fillStyle = s.color;
         ctx.fillText(s.text, s.x, s.y);
       }
