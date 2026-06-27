@@ -14,8 +14,12 @@
   const SKIN_COLORS = ['#ffd9b3', '#f1c27d', '#c68642', '#8d5524', '#ffe0bd'];
 
   const CHEERS = ['GOOOAL!', 'YES!!', 'WOOO!', 'GO PADI!', 'NICE!', 'AMAZING!'];
-  const SAVES = ['SAVE!', 'GREAT!', 'WALL!', 'KEEPER!', 'DENIED!'];
-  const BOOS = ['OOOH!', 'AWW...', 'SO CLOSE', 'MISS!', 'UNLUCKY'];
+  // The fans are ALWAYS behind the shooter: a save or a miss is met with
+  // cheered-on encouragement, never a boo.
+  const ENCOURAGE = [
+    'UNLUCKY!', 'NEXT ONE!', 'SO CLOSE!', 'KEEP GOING!',
+    'C\'MON PADI!', 'YOU GOT THIS', 'NEVER MIND!', 'AGAIN!',
+  ];
   const CHANTS = ['PA-DI!', 'SHOOT!', 'LETS GO', 'C\'MON!', 'GOAL?'];
 
   class Crowd {
@@ -57,20 +61,21 @@
     }
 
     react(type) {
+      // The crowd is 100% behind the shooter: they erupt for a goal and stand
+      // up to clap them on after a save or a miss - they never boo.
       let pool = CHANTS;
       if (type === 'goal') pool = CHEERS;
-      else if (type === 'save') pool = SAVES;
-      else if (type === 'miss') pool = BOOS;
+      else if (type === 'save' || type === 'miss') pool = ENCOURAGE;
 
       for (const p of this.people) {
-        if (type === 'goal' || type === 'save') {
-          p.vy = -90 - Math.random() * 170; // jump for joy
-        } else if (type === 'miss') {
-          p.vy = -20 + Math.random() * 10; // small disappointed slump
+        if (type === 'goal') {
+          p.vy = -90 - Math.random() * 170; // leap for joy
+        } else if (type === 'save' || type === 'miss') {
+          p.vy = -55 - Math.random() * 70; // stand up and clap them on
         }
       }
 
-      const count = type === 'goal' ? 7 : 4;
+      const count = type === 'goal' ? 7 : 5;
       for (let i = 0; i < count; i++) {
         const txt = pool[(Math.random() * pool.length) | 0];
         this.shouts.push({
@@ -80,12 +85,7 @@
           vy: -22 - Math.random() * 16,
           life: 0,
           max: 1.1 + Math.random() * 0.5,
-          color:
-            type === 'miss'
-              ? '#9aa5b1'
-              : type === 'save'
-              ? '#7ad7ff'
-              : '#fff45b',
+          color: type === 'goal' ? '#fff45b' : '#7cf59a', // gold goal / green cheer
         });
       }
 

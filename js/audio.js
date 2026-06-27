@@ -246,7 +246,8 @@
       this.cheer(0.6);
     }
 
-    // MISS - a comedic descending "wah-wah" and a crowd groan.
+    // MISS - a soft descending "wah-wah" cue, but the crowd still roars the
+    // shooter on. The fans are always supportive - never a groan.
     miss() {
       if (!this.ctx) return;
       const t = this._now();
@@ -254,7 +255,7 @@
       seq.forEach((m, i) => {
         this._tone(midiToFreq(m), t + i * 0.13, 0.16, 'sawtooth', 0.2);
       });
-      this.groan();
+      this.cheer(0.6);
     }
 
     // Ball hits the post/bar.
