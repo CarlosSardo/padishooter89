@@ -270,14 +270,14 @@
     );
     const p1 = document.getElementById('p1-name');
     const p2 = document.getElementById('p2-name');
-    if (!p1.value) p1.value = 'PAPA';
-    if (!p2.value) p2.value = 'DIOGO';
+    if (!p1.value) p1.value = 'PLAYER 1';
+    if (!p2.value) p2.value = 'PLAYER 2';
     showScreen('setup');
   }
 
   function startFromSetup() {
-    const p1 = (document.getElementById('p1-name').value || 'PAPA').toUpperCase();
-    const p2 = (document.getElementById('p2-name').value || 'DIOGO').toUpperCase();
+    const p1 = (document.getElementById('p1-name').value || 'PLAYER 1').toUpperCase();
+    const p2 = (document.getElementById('p2-name').value || 'PLAYER 2').toUpperCase();
     const cfg = {
       mode: G.setupMode,
       difficulty: G.setupDiff || 'normal',
