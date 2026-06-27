@@ -55,9 +55,21 @@
             <input id="p1-name" type="text" maxlength="10" value="PAPA" />
           </div>
 
+          <div class="field team-field">
+            <label for="p1-comp">Player 1 team — pick a league or cup</label>
+            <select id="p1-comp" class="select"></select>
+            <select id="p1-team" class="select"></select>
+          </div>
+
           <div class="field" id="p2-row" style="display: none">
             <label for="p2-name">Player 2 name</label>
             <input id="p2-name" type="text" maxlength="10" value="DIOGO" />
+          </div>
+
+          <div class="field team-field" id="p2-team-row">
+            <label for="p2-comp" id="p2-team-label">Opponent team — pick a league or cup</label>
+            <select id="p2-comp" class="select"></select>
+            <select id="p2-team" class="select"></select>
           </div>
 
           <div class="field" id="diff-row">
@@ -122,6 +134,7 @@
     </div>
 
     <!-- load order matters: helpers first, game last -->
+    <script src="js/teams.js"></script>
     <script src="js/audio.js"></script>
     <script src="js/leaderboard.js"></script>
     <script src="js/crowd.js"></script>

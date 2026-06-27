@@ -62,6 +62,16 @@
     shooter2: '#1d4ed8',
   };
 
+  // Fallback kits used on the menus / before any team is chosen.
+  const KEEPER_FALLBACK = { primary: COL.keeper, secondary: COL.keeper2, text: '#1a1a1a', short: 'GK' };
+  const SHOOTER_FALLBACK = { primary: COL.shooter, secondary: COL.shooter2, text: '#ffffff', short: '' };
+
+  // Return a player's chosen team kit, or a sensible fallback kit.
+  function kitOf(player, fallback) {
+    if (player && player.team) return player.team;
+    return fallback || (PADI.Teams && PADI.Teams.DEFAULT) || SHOOTER_FALLBACK;
+  }
+
   // =====================================================================
   //  GAME STATE
   // =====================================================================
@@ -113,6 +123,7 @@
     G.crowd = new PADI.Crowd({ x: 40, y: 18, w: VW - 80, h: 118 });
 
     bindMenus();
+    setupTeamPickers();
     bindCanvasInput();
     window.addEventListener('resize', cacheRect);
     cacheRect();
@@ -176,6 +187,62 @@
     if (audio.musicEnabled && !audio.musicPlaying) audio.startMusic();
   }
 
+  // ---- team / competition pickers --------------------------------------
+  function compIndexById(id) {
+    const i = PADI.Teams.competitions.findIndex((c) => c.id === id);
+    return i < 0 ? 0 : i;
+  }
+  function fillCompSelect(sel) {
+    if (!sel) return;
+    sel.innerHTML = '';
+    PADI.Teams.competitions.forEach((c, i) => {
+      const o = document.createElement('option');
+      o.value = String(i);
+      o.textContent = c.emoji + ' ' + c.name;
+      sel.appendChild(o);
+    });
+  }
+  function fillTeamSelect(compSel, teamSel, keepName) {
+    if (!compSel || !teamSel) return;
+    const comp = PADI.Teams.competitions[+compSel.value] || PADI.Teams.competitions[0];
+    teamSel.innerHTML = '';
+    comp.teams.forEach((t, i) => {
+      const o = document.createElement('option');
+      o.value = String(i);
+      o.textContent = t.name;
+      teamSel.appendChild(o);
+    });
+    if (keepName) {
+      const idx = comp.teams.findIndex((t) => t.name === keepName);
+      if (idx >= 0) teamSel.value = String(idx);
+    }
+  }
+  function readTeam(compId, teamId) {
+    const compSel = document.getElementById(compId);
+    const teamSel = document.getElementById(teamId);
+    if (!compSel || !teamSel) return PADI.Teams.DEFAULT;
+    const comp = PADI.Teams.competitions[+compSel.value] || PADI.Teams.competitions[0];
+    return comp.teams[+teamSel.value] || comp.teams[0] || PADI.Teams.DEFAULT;
+  }
+  function setupTeamPickers() {
+    const p1c = document.getElementById('p1-comp');
+    const p1t = document.getElementById('p1-team');
+    const p2c = document.getElementById('p2-comp');
+    const p2t = document.getElementById('p2-team');
+    if (!p1c || !p2c) return;
+    fillCompSelect(p1c);
+    fillCompSelect(p2c);
+    // fun defaults: a Portugal vs Netherlands World Cup tie :)
+    p1c.value = String(compIndexById('wc'));
+    p2c.value = String(compIndexById('wc'));
+    fillTeamSelect(p1c, p1t, 'Portugal');
+    fillTeamSelect(p2c, p2t, 'Netherlands');
+    p1c.addEventListener('change', () => { tap(); fillTeamSelect(p1c, p1t); });
+    p2c.addEventListener('change', () => { tap(); fillTeamSelect(p2c, p2t); });
+    p1t.addEventListener('change', tap);
+    p2t.addEventListener('change', tap);
+  }
+
   function openSetup(mode) {
     G.setupMode = mode;
     G.setupDiff = G.setupDiff || 'normal';
@@ -183,6 +250,11 @@
       mode === '1p' ? '1 PLAYER vs CPU' : '2 PLAYERS';
     document.getElementById('p2-row').style.display = mode === '2p' ? '' : 'none';
     document.getElementById('diff-row').style.display = mode === '1p' ? '' : 'none';
+    const p2TeamLabel = document.getElementById('p2-team-label');
+    if (p2TeamLabel)
+      p2TeamLabel.textContent =
+        (mode === '2p' ? 'Player 2 team' : 'CPU opponent team') +
+        ' \u2014 pick a league or cup';
     document.querySelectorAll('[data-diff]').forEach((x) =>
       x.classList.toggle('sel', x.getAttribute('data-diff') === G.setupDiff)
     );
@@ -201,6 +273,8 @@
       difficulty: G.setupDiff || 'normal',
       p1Name: p1.slice(0, 10),
       p2Name: G.setupMode === '2p' ? p2.slice(0, 10) : 'CPU',
+      p1Team: readTeam('p1-comp', 'p1-team'),
+      p2Team: readTeam('p2-comp', 'p2-team'),
     };
     showScreen(null);
     startMatch(cfg);
@@ -219,8 +293,8 @@
       mode: cfg.mode,
       difficulty: cfg.difficulty || 'normal',
       players: [
-        { name: cfg.p1Name, isCPU: false, goals: 0, taken: 0 },
-        { name: cfg.p2Name, isCPU: cfg.mode === '1p', goals: 0, taken: 0 },
+        { name: cfg.p1Name, isCPU: false, goals: 0, taken: 0, team: cfg.p1Team || PADI.Teams.DEFAULT },
+        { name: cfg.p2Name, isCPU: cfg.mode === '1p', goals: 0, taken: 0, team: cfg.p2Team || PADI.Teams.DEFAULT },
       ],
       round: 1,
       maxRounds: 5,
@@ -296,7 +370,7 @@
 
     const sh = shooter();
     const roundLabel = m.suddenDeath ? 'SUDDEN DEATH' : 'ROUND ' + m.round + '/' + m.maxRounds;
-    setBanner(roundLabel + '  -  ' + sh.name + ' SHOOTS', 1.4);
+    setBanner(roundLabel + '  -  ' + sh.name + ' (' + kitOf(sh).short + ') SHOOTS', 1.4);
     setPhase('getready');
     delay(1300, () => beginKeeperPhase());
   }
@@ -813,6 +887,7 @@
     ctx.translate(k.x, k.y);
     ctx.rotate(k.lean * 0.5);
     const reach = k.arms;
+    const kit = kitOf(G.match ? keeper() : null, KEEPER_FALLBACK);
     // legs
     ctx.strokeStyle = '#1f2937';
     ctx.lineWidth = 6;
@@ -823,13 +898,16 @@
     ctx.moveTo(4, -2);
     ctx.lineTo(8 + reach * 14, 18);
     ctx.stroke();
-    // body (keeper jersey)
-    ctx.fillStyle = COL.keeper;
+    // body (keeper jersey, team kit)
+    ctx.fillStyle = kit.primary;
     ctx.fillRect(-9, -34, 18, 34);
-    ctx.fillStyle = COL.keeper2;
+    ctx.fillStyle = kit.secondary;
     ctx.fillRect(-9, -20, 18, 4);
+    ctx.strokeStyle = '#0a0a0a';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(-9, -34, 18, 34);
     // arms reaching out for the dive
-    ctx.strokeStyle = COL.keeper;
+    ctx.strokeStyle = kit.primary;
     ctx.lineWidth = 6;
     const armSpread = 12 + reach * 30;
     const dir = k.dive >= 0 ? 1 : -1;
@@ -857,6 +935,7 @@
     const baseX = SPOT.x - 26;
     const baseY = 520;
     const kick = G.shooterKick > 0 ? Math.sin(Math.min(1, G.shooterKick / 0.2) * Math.PI) : 0;
+    const kit = kitOf(G.match ? shooter() : null, SHOOTER_FALLBACK);
     ctx.save();
     ctx.translate(baseX, baseY);
     // legs (one kicks toward the ball)
@@ -870,17 +949,20 @@
     ctx.lineTo(14 + kick * 22, 14 - kick * 16);
     ctx.stroke();
     // body
-    ctx.fillStyle = COL.shooter;
+    ctx.fillStyle = kit.primary;
     ctx.fillRect(-11, -40, 22, 38);
-    ctx.fillStyle = COL.shooter2;
+    ctx.fillStyle = kit.secondary;
     ctx.fillRect(-11, -26, 22, 5);
+    ctx.strokeStyle = '#0a0a0a';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(-11, -40, 22, 38);
     // number
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = kit.text;
     ctx.font = '10px "Press Start 2P", monospace';
     ctx.textAlign = 'center';
     ctx.fillText('89', 0, -18);
     // arms
-    ctx.strokeStyle = COL.shooter;
+    ctx.strokeStyle = kit.primary;
     ctx.lineWidth = 6;
     ctx.beginPath();
     ctx.moveTo(-9, -34);
@@ -1030,13 +1112,25 @@
     ctx.fillStyle = '#fff';
     const label = m.suddenDeath ? 'SUDDEN DEATH' : 'ROUND ' + m.round + '/' + m.maxRounds;
     ctx.fillText(label, VW / 2, 178);
-    // role tags
+    // role tags + team badge colour
     ctx.font = '8px "Press Start 2P", monospace';
+    const t0 = kitOf(m.players[0]);
+    const t1 = kitOf(m.players[1]);
+    ctx.lineWidth = 1;
+    ctx.fillStyle = t0.primary;
+    ctx.fillRect(18, 182, 8, 8);
+    ctx.strokeStyle = '#000';
+    ctx.strokeRect(18, 182, 8, 8);
     ctx.textAlign = 'left';
     ctx.fillStyle = '#7ad7ff';
-    ctx.fillText(shooterIndex() === 0 ? 'SHOOTER' : 'KEEPER', 18, 189);
+    ctx.fillText((shooterIndex() === 0 ? 'SHOOTER' : 'KEEPER') + ' ' + t0.short, 30, 189);
+    ctx.fillStyle = t1.primary;
+    ctx.fillRect(VW - 26, 182, 8, 8);
+    ctx.strokeStyle = '#000';
+    ctx.strokeRect(VW - 26, 182, 8, 8);
     ctx.textAlign = 'right';
-    ctx.fillText(shooterIndex() === 1 ? 'SHOOTER' : 'KEEPER', VW - 18, 189);
+    ctx.fillStyle = '#7ad7ff';
+    ctx.fillText(t1.short + ' ' + (shooterIndex() === 1 ? 'SHOOTER' : 'KEEPER'), VW - 30, 189);
   }
 
   function setBanner(text, time) {

@@ -219,6 +219,39 @@ h2.heading {
   box-shadow: inset 0 0 0 2px var(--accent);
 }
 
+/* league / team dropdowns */
+.field .select {
+  width: 100%;
+  padding: 11px 12px;
+  font-family: var(--pixel);
+  font-size: 10px;
+  color: #fff;
+  background: #0a1622;
+  border: 3px solid #000;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.15);
+  text-transform: uppercase;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--accent) 50%),
+    linear-gradient(135deg, var(--accent) 50%, transparent 50%);
+  background-position: right 14px center, right 8px center;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+.field .select:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+.team-field .select + .select {
+  margin-top: 6px;
+}
+.field .select option {
+  background: #0a1622;
+  color: #fff;
+}
+
 .diff-buttons {
   display: flex;
   gap: 6px;

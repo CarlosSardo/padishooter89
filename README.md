@@ -50,6 +50,7 @@ no build step. Even the music and sound effects are generated in code! 🎶
 |---|---|
 | 🕹️ **Retro 8-bit look** | Pixel font, CRT scanlines, chunky pixel players |
 | 👥 **1 or 2 players** | Beat a friend, or take on the **CPU** (Easy / Normal / Hard) |
+| 🌍 **Pick any team** | Play as any **club or country** — Champions League, World Cup (WK), Euros (EK), La Liga, Primeira Liga, Premier League, Eredivisie, Serie A, Bundesliga & Ligue 1. Your team's **kit colours** appear on the pitch! |
 | 💪 **Power control** | Pick your shot power from **1% to 100%** |
 | 🎯 **9 aim zones** | Top / middle / bottom × left / centre / right |
 | 🧤 **Be the keeper** | Pick where to dive and make the save |
@@ -122,6 +123,7 @@ padishooter89/
 ├── css/
 │   └── style.css       # the retro look (pixel UI, CRT scanlines, responsive)
 └── js/
+    ├── teams.js        # all the leagues, clubs & countries + kit colours
     ├── audio.js        # chiptune sound engine (Web Audio API — all in code!)
     ├── leaderboard.js  # saves high scores (localStorage)
     ├── crowd.js        # the cheering pixel fans
