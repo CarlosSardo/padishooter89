@@ -25,6 +25,12 @@
   class Crowd {
     constructor(area) {
       this.area = area; // {x, y, w, h}
+      // Support shouts pop up here - the middle of the screen by default so
+      // the encouragement is front and centre.
+      this.shoutCenter = area.shoutCenter || {
+        x: area.x + area.w / 2,
+        y: area.y + area.h / 2,
+      };
       this.people = [];
       this.shouts = [];
       this.confetti = [];
@@ -76,12 +82,15 @@
       }
 
       const count = type === 'goal' ? 7 : 5;
+      const cx = this.shoutCenter.x;
+      const cy = this.shoutCenter.y;
       for (let i = 0; i < count; i++) {
         const txt = pool[(Math.random() * pool.length) | 0];
         this.shouts.push({
           text: txt,
-          x: this.area.x + 20 + Math.random() * (this.area.w - 40),
-          y: this.area.y + 10 + Math.random() * (this.area.h - 20),
+          // cluster the support around the middle of the screen
+          x: cx + (Math.random() - 0.5) * 320,
+          y: cy + (Math.random() - 0.5) * 140,
           vy: -22 - Math.random() * 16,
           life: 0,
           max: 1.1 + Math.random() * 0.5,
@@ -159,7 +168,8 @@
           ctx.fillRect(p.x - s * 0.5, p.y + s * 0.1, s, s * 0.18);
         }
       }
-      this.drawShouts(ctx);
+      // Shouts are drawn separately (drawShouts) so they sit on top of the
+      // action in the middle of the screen, not behind the pitch.
     }
 
     drawShouts(ctx) {

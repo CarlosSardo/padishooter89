@@ -120,7 +120,13 @@
     G.canvas.height = VH;
     G.ctx.imageSmoothingEnabled = false;
 
-    G.crowd = new PADI.Crowd({ x: 40, y: 18, w: VW - 80, h: 118 });
+    G.crowd = new PADI.Crowd({
+      x: 40,
+      y: 18,
+      w: VW - 80,
+      h: 118,
+      shoutCenter: { x: VW / 2, y: VH / 2 }, // support pops up mid-screen
+    });
 
     bindMenus();
     setupTeamPickers();
@@ -773,6 +779,7 @@
     if (G.match && !G.match.decided && G.phase !== 'menu') drawHUD(ctx);
     drawBanner(ctx);
     if (G.phase === 'result') drawResult(ctx);
+    G.crowd.drawShouts(ctx); // supportive shouts on top, in the middle
     drawTopButtons(ctx);
 
     ctx.restore();
