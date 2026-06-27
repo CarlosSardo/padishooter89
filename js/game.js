@@ -1119,26 +1119,50 @@
     ctx.fillStyle = '#fff';
     const label = m.suddenDeath ? 'SUDDEN DEATH' : 'ROUND ' + m.round + '/' + m.maxRounds;
     ctx.fillText(label, VW / 2, 178);
-    // role tags + team badge colour
+    // The "who shoots / who defends" role tags now live UP IN THE CROWD.
+    drawRoleTags(ctx);
+  }
+
+  // Role tags ("SHOOTER" / "KEEPER" + team colour) shown up in the stands,
+  // so it's clear who is shooting and who is defending without crowding the
+  // pitch. Drawn over the crowd with a dark backing for readability.
+  function drawRoleTags(ctx) {
+    const m = G.match;
     ctx.font = '8px "Press Start 2P", monospace';
     const t0 = kitOf(m.players[0]);
     const t1 = kitOf(m.players[1]);
+    const role0 = shooterIndex() === 0 ? 'SHOOTER' : 'KEEPER';
+    const role1 = shooterIndex() === 1 ? 'SHOOTER' : 'KEEPER';
+    const y = 120; // in the stands, just below the announcement banner
     ctx.lineWidth = 1;
+
+    // left player
+    const lbl0 = role0 + ' ' + t0.short;
+    const w0 = ctx.measureText(lbl0).width;
+    ctx.fillStyle = 'rgba(0,0,0,0.65)';
+    ctx.fillRect(12, y - 11, w0 + 30, 16);
     ctx.fillStyle = t0.primary;
-    ctx.fillRect(18, 182, 8, 8);
+    ctx.fillRect(18, y - 8, 9, 9);
     ctx.strokeStyle = '#000';
-    ctx.strokeRect(18, 182, 8, 8);
+    ctx.strokeRect(18, y - 8, 9, 9);
     ctx.textAlign = 'left';
-    ctx.fillStyle = '#7ad7ff';
-    ctx.fillText((shooterIndex() === 0 ? 'SHOOTER' : 'KEEPER') + ' ' + t0.short, 30, 189);
+    ctx.fillStyle = role0 === 'SHOOTER' ? '#ffd23b' : '#7ad7ff';
+    ctx.fillText(lbl0, 32, y);
+
+    // right player
+    const lbl1 = t1.short + ' ' + role1;
+    const w1 = ctx.measureText(lbl1).width;
+    ctx.fillStyle = 'rgba(0,0,0,0.65)';
+    ctx.fillRect(VW - 12 - (w1 + 30), y - 11, w1 + 30, 16);
     ctx.fillStyle = t1.primary;
-    ctx.fillRect(VW - 26, 182, 8, 8);
+    ctx.fillRect(VW - 27, y - 8, 9, 9);
     ctx.strokeStyle = '#000';
-    ctx.strokeRect(VW - 26, 182, 8, 8);
+    ctx.strokeRect(VW - 27, y - 8, 9, 9);
     ctx.textAlign = 'right';
-    ctx.fillStyle = '#7ad7ff';
-    ctx.fillText(t1.short + ' ' + (shooterIndex() === 1 ? 'SHOOTER' : 'KEEPER'), VW - 30, 189);
+    ctx.fillStyle = role1 === 'SHOOTER' ? '#ffd23b' : '#7ad7ff';
+    ctx.fillText(lbl1, VW - 32, y);
   }
+
 
   function setBanner(text, time) {
     G.banner = { text, time: time || 0, life: 0 };
